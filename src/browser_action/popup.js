@@ -14,7 +14,16 @@ var edges = new vis.DataSet([
 {from: 2, to: 4},
 {from: 2, to: 5}
 ]);*/
-var nodes = new vis.DataSet(chrome.extension.getBackgroundPage().sites);
+function nodes_prepare_for_graphing(sites){
+  var nodes = [];
+  //TODO
+  for(var i=0;i<sites.length;++i){
+    nodes.push({id:sites[i].id,label:sites[i].label,shape:'box',level:Math.floor(Math.random()*20)});//TODO levels
+  }
+  return nodes;
+}
+
+var nodes = new vis.DataSet(nodes_prepare_for_graphing(chrome.extension.getBackgroundPage().sites));
 var edges = new vis.DataSet(chrome.extension.getBackgroundPage().links);
 // create a network
 var container = document.getElementById('mynetwork');
@@ -25,7 +34,12 @@ var data = {
 var options = {
    layout: {
       hierarchical: {
-         sortMethod: 'directed '
+         sortMethod: 'directed ',
+         direction: 'UD',
+         levelSeparation: 20,
+         nodeSpacing: 10,
+         treeSpacing: 50,
+         parentCentralization: false
       }
    },
    edges: {
