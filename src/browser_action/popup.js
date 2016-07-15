@@ -17,7 +17,13 @@ function prepareGraph(sites,links){
     var outs = [];
     var ins = [];
     for(var i=0;i<sites.length;++i){
-        nodes.push({id:sites[i].id,label:trim(filter(sites[i].title)),shape:'box',font:{size:23},level:undefined});
+        nodes.push({
+            id:sites[i].id,
+            //level:undefined,
+            label:trim(filter(sites[i].title)),
+            title:sites[i].title+"<br>"+decodeURIComponent(sites[i].url),
+            group: "myGroup"
+        });
         outs.push([]);
         ins.push([]);
     }
@@ -64,33 +70,30 @@ var data = {
 var options = {
     layout: {
         randomSeed: 0
-        /*hierarchical: {
-            direction: 'LR',
-            levelSeparation: 50,
-            nodeSpacing: 30,
-            treeSpacing: 80,
-            parentCentralization: true
-        }*/
     },
     edges: {
         smooth: true,
         arrows: {to : true }
     },
+    groups: {
+        myGroup: {
+            shape:'box',
+            font:{size:23},
+            color:{
+                background: "#DDDDD0",
+                border: "#888880",
+                highlight: "#BBBBCC"
+            }
+        }
+    },
     physics:{
         barnesHut: {
             gravitationalConstant: -2000,
             centralGravity: 0.3,
-            springLength: 50,
+            springLength: 20,
             springConstant: 0.015,
             damping: 0.25,
             avoidOverlap: 0.75
-        },
-        hierarchicalRepulsion: {
-            centralGravity: 0.1,
-            springLength: 90,
-            springConstant: 0.01,
-            nodeDistance: 120,
-            damping: 0.09
         },
     },
     interaction: {
@@ -101,7 +104,10 @@ var options = {
 var network = new vis.Network(container, data, options);
 $(function() {
     network.stabilize();
+    var firstTime = true;
     network.on('stabilized',function(){
+        if(!firstTime) return;
+        firstTime = false;
         chrome.tabs.query({active: true},function(results){
             if(results.length>0){
                 var uid = removeTrail(results[0].url);
