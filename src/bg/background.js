@@ -1,5 +1,5 @@
 var wikiOnly = false;
-
+var wikiDomains = ["wikipedia.org","wikia.com"];//TODO customize the list in options
 var sites = [];
 var links = [];
 var uidToSiteId = {};
@@ -12,7 +12,9 @@ function clearMemory(){
 
 function isValid(site){
     if(wikiOnly){
-        if(site.uid.indexOf("wikipedia.org")>=0) return true;//TODO options to add more "WIKI" sites, better filter
+        for(var i=0;i<wikiDomains.length;++i){
+            if(site.uid.indexOf(wikiDomains[i])>=0) return true;
+        }
         return false;
     }
     else{
@@ -23,6 +25,9 @@ function isValid(site){
 
 function getSiteId(site){
     if(uidToSiteId[site.uid]!==undefined){//if site is already registered
+        if(sites[uidToSiteId[site.uid]].title == sites[uidToSiteId[site.uid]].uid){//if the site used to have a placeholder title (due to insufficient information)
+            sites[uidToSiteId[site.uid]].title = site.title;//try updating it
+        }
         return uidToSiteId[site.uid];//return its id
     }
     //otherwise register the site

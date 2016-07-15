@@ -4,6 +4,10 @@ function filter(title){
         if(wiki>=0){
             return title.substring(0,wiki-3);
         }
+        wiki = title.indexOf("Wikia");
+        if(wiki>=0){
+            return title.substring(0,wiki-3);
+        }
     }
     return title;
 }
@@ -12,6 +16,9 @@ function debug(msg){
 }
 
 function prepareGraph(sites,links){
+    if(sites.length==0){
+        return {nodes:[{id:0,label:"Nothing to show yet, please wait for the website to load",group:"myGroup",font:{size:40}}],edges:[]};
+    }
     var nodes = [];
     var edges = links;
     var outs = [];
@@ -91,10 +98,11 @@ var options = {
             gravitationalConstant: -2000,
             centralGravity: 0.3,
             springLength: 20,
-            springConstant: 0.015,
-            damping: 0.25,
-            avoidOverlap: 0.75
+            springConstant: 0.023,
+            damping: 0.7,
+            avoidOverlap: 0.7
         },
+        solver: "barnesHut"
     },
     interaction: {
         navigationButtons: true,
