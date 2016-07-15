@@ -15,7 +15,7 @@ function prepareGraph(sites,links){
     var ins = [];
     for(var i=0;i<sites.length;++i){
         debug(JSON.stringify(sites[i]));
-        nodes.push({id:sites[i].id,label:trim(sites[i].title),shape:'box',level:undefined});
+        nodes.push({id:sites[i].id,label:trim(sites[i].title),shape:'box',font:{size:23},level:undefined});
         outs.push([]);
         ins.push([]);
     }
@@ -77,11 +77,11 @@ var options = {
     physics:{
         barnesHut: {
             gravitationalConstant: -2000,
-            centralGravity: 0.4,
+            centralGravity: 0.1,
             springLength: 25,
-            springConstant: 0.01,
-            damping: 0.2,
-            avoidOverlap: 0.7
+            springConstant: 0.007,
+            damping: 0.3,
+            avoidOverlap: 0.5
         },
         hierarchicalRepulsion: {
             centralGravity: 0.1,

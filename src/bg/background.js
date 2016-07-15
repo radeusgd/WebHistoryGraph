@@ -56,7 +56,16 @@ chrome.runtime.onMessage.addListener(function (msg, sender) {
         //insert a from to link
         var f = getSiteId(msg.from);
         var t = getSiteId(msg.to);
-        links.push({from:f,to:t});//TODO *maybe* deal with duplicates
+        var shouldAddLink = true;
+        for(var i=0;i<links.length;++i){//consider optimizing that? (probably not that important, it's just O(E))
+            if(links[i].from==f && links[i].to==t){
+                shouldAddLink = false;
+                break;
+            }
+        }
+        if(shouldAddLink){
+            links.push({from:f,to:t});
+        }
     }else{
         //just insert the current website (most likely it was opened by typing the address hence no referrer)
         getSiteId(msg.to);
