@@ -97,8 +97,16 @@ $(function() {
     var network = new vis.Network(container, data, options);
     network.on( 'doubleClick', function(properties) {
         var url = chrome.extension.getBackgroundPage().sites[properties.nodes].url;
-        //TODO check current tabs and for uids and if they match, switch to tab instead of opening a new one
-        chrome.tabs.create({ url: url });
+        var uid = chrome.extension.getBackgroundPage().sites[properties.nodes].uid;
+        chrome.tabs.query({url:"*://"+uid+"*"},function(results){
+            if(results.length>0){
+                //switch to tab
+                chrome.tabs.update(results[0].id,{active:true});
+            }
+            else{//no tabs found, open a new one
+                chrome.tabs.create({ url: url });
+            }
+        });
     });
     $("#clear").click(function(){
         chrome.extension.getBackgroundPage().clearMemory();
