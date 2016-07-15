@@ -22,13 +22,15 @@
   "permissions": [
     "tabs",
     "http://*/*",
-    "https://*.wikipedia.org/*"
+    "https://*.wikipedia.org/*",
+    "*://*/*"
   ],
   "content_scripts": [
     {
       "matches": [
         "http://*/*",
-        "https://*.wikipedia.org /*"
+        "https://*.wikipedia.org /*",
+        "*://*/*"
       ],
       "js": [
         "js/jquery/jquery.min.js",
