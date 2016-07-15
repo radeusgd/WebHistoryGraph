@@ -1,21 +1,23 @@
+function filter(title){
+    if(chrome.extension.getBackgroundPage().wikiOnly){
+        var wiki = title.lastIndexOf("Wikipedia");
+        if(wiki>=0){
+            return title.substring(0,wiki-3);
+        }
+    }
+    return title;
+}
 function debug(msg){
     $("#dbgmsg").html($("#dbgmsg").html()+msg+"<br>");
 }
-function trim(str){
-    var maxLen = 45;
-    if(str.length > maxLen){
-        return str.substr(0,maxLen-3)+"...";
-    }
-    return str;
-}
+
 function prepareGraph(sites,links){
     var nodes = [];
     var edges = links;
     var outs = [];
     var ins = [];
     for(var i=0;i<sites.length;++i){
-        debug(JSON.stringify(sites[i]));
-        nodes.push({id:sites[i].id,label:trim(sites[i].title),shape:'box',font:{size:23},level:undefined});
+        nodes.push({id:sites[i].id,label:trim(filter(sites[i].title)),shape:'box',font:{size:23},level:undefined});
         outs.push([]);
         ins.push([]);
     }
@@ -77,11 +79,11 @@ var options = {
     physics:{
         barnesHut: {
             gravitationalConstant: -2000,
-            centralGravity: 0.1,
-            springLength: 25,
-            springConstant: 0.007,
-            damping: 0.3,
-            avoidOverlap: 0.5
+            centralGravity: 0.3,
+            springLength: 50,
+            springConstant: 0.015,
+            damping: 0.25,
+            avoidOverlap: 0.75
         },
         hierarchicalRepulsion: {
             centralGravity: 0.1,
@@ -90,11 +92,30 @@ var options = {
             nodeDistance: 120,
             damping: 0.09
         },
+    },
+    interaction: {
+        navigationButtons: true,
+        keyboard: true
     }
 };
-
+var network = new vis.Network(container, data, options);
 $(function() {
-    var network = new vis.Network(container, data, options);
+    network.stabilize();
+    network.on('stabilized',function(){
+        chrome.tabs.query({active: true},function(results){
+            if(results.length>0){
+                var uid = removeTrail(results[0].url);
+                var sites = chrome.extension.getBackgroundPage().sites;
+                for(var i=0;i<sites.length;++i){
+                    if(sites[i].uid == uid){
+                        network.focus(sites[i].id,{
+                            scale: 1.1
+                        });
+                    }
+                }
+            }
+        });
+    });
     network.on( 'doubleClick', function(properties) {
         var url = chrome.extension.getBackgroundPage().sites[properties.nodes].url;
         var uid = chrome.extension.getBackgroundPage().sites[properties.nodes].uid;
@@ -108,14 +129,16 @@ $(function() {
             }
         });
     });
+    network.on( 'click', function(properties) {
+        //TODO some kind of highlight change??
+    });
     $("#clear").click(function(){
         chrome.extension.getBackgroundPage().clearMemory();
         window.location.href="";
     });
     $("#wiki-only").change(function() {
         chrome.extension.getBackgroundPage().wikiOnly = this.checked;
-        debug("set to: "+chrome.extension.getBackgroundPage().wikiOnly);
+        window.location.href="";//update labels potentially
     });
-    debug("loaded as: "+chrome.extension.getBackgroundPage().wikiOnly);
     $("#wiki-only").attr("checked",chrome.extension.getBackgroundPage().wikiOnly);
 });

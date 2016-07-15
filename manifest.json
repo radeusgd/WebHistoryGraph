@@ -34,6 +34,7 @@
       ],
       "js": [
         "js/jquery/jquery.min.js",
+        "src/utils.js",
         "src/inject/inject.js"
       ]
     }

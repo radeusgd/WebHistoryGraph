@@ -21,17 +21,6 @@ function isValid(site){
     }
 }
 
-function filter(title){
-    if(wikiOnly){
-        var wiki = title.lastIndexOf("Wikipedia");
-        console.log("FLT ",title,wiki);
-        if(wiki>=0){
-            return title.substring(0,wiki-3);
-        }
-    }
-    return title;
-}
-
 function getSiteId(site){
     if(uidToSiteId[site.uid]!==undefined){//if site is already registered
         return uidToSiteId[site.uid];//return its id
@@ -42,7 +31,6 @@ function getSiteId(site){
     if(wikiOnly && site.title == site.uid){
         //TODO fetch title from wikipedia?
     }
-    site.title = filter(site.title);
     uidToSiteId[site.uid] = sites.length;
     sites.push(site);
     return uidToSiteId[site.uid];
